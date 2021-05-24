@@ -1,5 +1,5 @@
 import request from "request-promise";
-import { logger } from "../../logger/logger.js";
+import { logger } from "../logger/logger.js";
 
 export const getPage = async (uri) => {
   const options = {

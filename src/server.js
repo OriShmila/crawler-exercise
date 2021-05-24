@@ -8,5 +8,4 @@ const server = express();
 
 server.use("/ebay-data", ebayApi);
 
-//Initialises the express server on the port 30000
 server.listen(port, () => logger.info(`Server listening on port ${port}`));

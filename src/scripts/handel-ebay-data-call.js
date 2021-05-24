@@ -1,7 +1,7 @@
-import { getPage } from "./procces-data/fetch-page.js";
 import { JSDOM } from "jsdom";
-import { fetchItemsData } from "./procces-data/fetch-items-data.js";
-import { fetchRelatedsValues } from "./procces-data/fetch-related-values.js";
+import { getPage } from "./fetch-page.js";
+import { fetchItemsData } from "./procces-ebay-data/fetch-items-data.js";
+import { fetchRelatedsValues } from "./procces-ebay-data/fetch-related-values.js";
 import { logger } from "../logger/logger.js";
 
 const PAGINATION_PATH = "&_pgn=";
