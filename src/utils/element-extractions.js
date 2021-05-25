@@ -33,10 +33,10 @@ export const getTextFromElementBySelector = (element, selector) =>
 export const getTextVisibleInside = (element, selector, page) => {
   let text = "";
 
-  fetchNestedElements(element, identified)[0].forEach(
+  extractNestedElements(element, selector)[0].forEach(
     (child) =>
       (text +=
-        body.window.getComputedStyle(child).display === "none"
+        page.window.getComputedStyle(child).display === "none"
           ? ""
           : child.textContent)
   );

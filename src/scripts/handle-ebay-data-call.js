@@ -1,48 +1,33 @@
-import { JSDOM } from "jsdom";
-import { fetchPage } from "./fetch-page.js";
-import { extractItems } from "./procces-ebay-data/extract-items/extract-items.js";
-import { extractRelatedProducts } from "./procces-ebay-data/extract-related-products/extract-related-products.js";
 import { logger } from "../logger/logger.js";
-
-const PAGINATION_PATH = "&_pgn=";
+import { intervalPromise } from "../utils/interval-promise.js";
+import { orderItems } from "./order-items.js";
+import { extractData } from "./procces-ebay-data/extract-data.js";
 
 export const handleEbayDataCall = async (uri) => {
-  let items = [];
-  let relatedProducts = [];
   let pageNumber = 1;
-  let hasItemsOnPage = true;
+  const results = new Map();
 
-  while (hasItemsOnPage) {
-    let itemPosition = getCurrentItemPosition(items);
-    const page = await fetchPage(`${uri}${PAGINATION_PATH}${pageNumber}`);
-    const domPage = new JSDOM(page);
+  try {
+    await intervalPromise(async (interval, resolve) => {
+      const result = await extractData(uri, pageNumber);
 
-    if (relatedProducts.length === 0 || pageNumber === 1) {
-      relatedProducts = extractRelatedProducts(domPage);
-    }
+      if (result === null) {
+        logger.info(`Crawler on ${uri} completed at page ${pageNumber}`);
 
-    const newItems = extractItems(domPage);
+        clearInterval(interval);
+        return resolve(results);
+      }
 
-    if (newItems.length === 0) {
-      hasItemsOnPage = false;
-      break;
-    }
-
-    newItems.forEach((item) => {
-      item.position = itemPosition++;
-      items.push(item);
-    });
-
-    pageNumber++;
+      results.set(pageNumber, result);
+      pageNumber++;
+    }, 3000);
+  } catch (error) {
+    logger.error("Fetched eBay data faild", error);
+    throw error;
   }
 
-  logger.info(`Crawler on ${uri} completed`);
-
-  return { relatedProducts, items };
-};
-
-const getCurrentItemPosition = (items) => {
-  const itemsLength = items.length;
-
-  return itemsLength > 0 ? itemsLength : 1;
+  return {
+    relatedProducts: results.get(1)?.relatedProducts,
+    items: orderItems(results),
+  };
 };
