@@ -9,17 +9,17 @@ export const handleEbayDataCall = async (uri) => {
 
   try {
     await intervalPromise(async (interval, resolve) => {
-      const result = await extractData(uri, pageNumber);
+      const currentPageNumber = pageNumber++;
+      const result = await extractData(uri, currentPageNumber);
 
       if (result === null) {
-        logger.info(`Crawler on ${uri} completed at page ${pageNumber}`);
+        logger.info(`Crawler on ${uri} completed at page ${currentPageNumber}`);
 
         clearInterval(interval);
         return resolve(results);
       }
 
-      results.set(pageNumber, result);
-      pageNumber++;
+      results.set(currentPageNumber, result);
     }, 3000);
   } catch (error) {
     logger.error("Fetched eBay data faild", error);

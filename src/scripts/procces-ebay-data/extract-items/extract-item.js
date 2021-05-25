@@ -24,7 +24,7 @@ export const extractDataFromItem = (element, page) => {
       element,
       ItemSelectors.PRICE_CLASS_NAME
     ),
-    purchase: getTextFromElementBySelector(
+    purchaseOptions: getTextFromElementBySelector(
       element,
       ItemSelectors.PURCHASE_OPTIONS_CLASS_NAME
     ),
