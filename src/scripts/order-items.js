@@ -10,6 +10,8 @@ export const orderItems = (results) => {
       hasMoreItems = false;
       return items;
     }
+
+    items.push(...currentItems);
   }
 
   logger.info(`Items ordered`);

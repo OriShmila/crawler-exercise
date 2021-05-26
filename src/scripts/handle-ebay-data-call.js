@@ -29,11 +29,8 @@ export const handleEbayDataCall = async (uri) => {
     throw error;
   }
 
-  const items = orderItems(results);
-  addPositionFor(items);
-
   return {
     relatedProducts: results.get(1)?.relatedProducts,
-    items,
+    items: addPositionFor(orderItems(results)),
   };
 };
