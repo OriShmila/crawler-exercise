@@ -4,7 +4,7 @@ class Logger {
   info = (message) => console.log(`${message} at: ${this.getDateNow()}`);
 
   error = (message, error) =>
-    console.log(`${message} Exception: ${error} at: ${this.getDateNow()}`);
+    console.error(`${message} Exception: ${error} at: ${this.getDateNow()}`);
 }
 
 export const logger = new Logger();
