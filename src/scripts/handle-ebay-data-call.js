@@ -1,22 +1,25 @@
 import { logger } from "../logger/logger.js";
-import { intervalPromise } from "../utils/interval-promise.js";
+import { promiseByInterval } from "../utils/promise-by-interval.js";
 import { orderItems } from "./order-items.js";
 import { extractData } from "./procces-ebay-data/extract-data.js";
+import { addPositionFor } from "./add-position.js";
 
 export const handleEbayDataCall = async (uri) => {
   let pageNumber = 1;
   const results = new Map();
 
   try {
-    await intervalPromise(async (interval, resolve) => {
+    await promiseByInterval(async (interval, resolve) => {
       const currentPageNumber = pageNumber++;
       const result = await extractData(uri, currentPageNumber);
 
       if (result === null) {
-        logger.info(`Crawler on ${uri} completed at page ${currentPageNumber}`);
+        logger.info(
+          `Crawler on ${uri} completed page ${currentPageNumber} is empty`
+        );
 
         clearInterval(interval);
-        return resolve(results);
+        return resolve();
       }
 
       results.set(currentPageNumber, result);
@@ -26,8 +29,11 @@ export const handleEbayDataCall = async (uri) => {
     throw error;
   }
 
+  const items = orderItems(results);
+  addPositionFor(items);
+
   return {
     relatedProducts: results.get(1)?.relatedProducts,
-    items: orderItems(results),
+    items,
   };
 };
